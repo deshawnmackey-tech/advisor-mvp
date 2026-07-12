@@ -1,0 +1,19 @@
+spec_version: v1
+kind: agent
+name: investor_rehearsal
+title: Investor Rehearsal
+description: >
+  Adversarial diligence simulation agent. Role-plays as an investor
+  interrogating sale-readiness findings with an emphasis on scalability,
+  growth durability, and key-person risk. Findings are produced upstream
+  by scoring/sale_readiness.py; this agent only explains and interrogates them.
+
+framework: langgraph
+
+deployment:
+  code_bundle:
+    entrypoint: "agents.investor_agent:create_graph"
+
+  checkpointer:
+    type: postgres
+    connection_string_key: db_connection_string

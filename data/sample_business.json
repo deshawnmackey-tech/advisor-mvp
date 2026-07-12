@@ -1,0 +1,21 @@
+{
+  "name": "Cornerstone Facilities Group",
+  "industry": "commercial janitorial services",
+  "annual_revenue": 4200000,
+  "ebitda": 588000,
+  "owner_addbacks": 145000,
+  "customer_revenue": {
+    "Meridian Office Park": 1428000,
+    "Delta Logistics Hub": 630000,
+    "Riverside Medical Plaza": 420000,
+    "all_other_customers": 1722000
+  },
+  "customers_with_multiyear_contracts": ["Riverside Medical Plaza"],
+  "recurring_revenue_pct": 72,
+  "owner_dependent_processes": [
+    "all client contract renewals negotiated personally by owner",
+    "no documented standard operating procedures for crew scheduling",
+    "owner is the only person with vendor pricing relationships"
+  ],
+  "documentation_completeness_pct": 55
+}

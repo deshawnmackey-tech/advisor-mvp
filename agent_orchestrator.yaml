@@ -1,0 +1,14 @@
+spec_version: v1
+kind: agent
+name: advisory_rehearsal_orchestrator
+title: Advisory Rehearsal Orchestrator
+description: >
+  Routing agent that selects which advisory rehearsal should run first:
+  buyer, SBA underwriter, or investor. It can honor an explicit requested
+  persona or choose one heuristically from the business profile.
+
+framework: langgraph
+
+deployment:
+  code_bundle:
+    entrypoint: "orchestrator.router:create_orchestrator_graph"

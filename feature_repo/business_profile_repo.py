@@ -1,16 +1,21 @@
 from datetime import timedelta
+from pathlib import Path
 
 from feast import Entity, FeatureView, Field, FileSource
-from feast.types import Float32, Float64, String
+from feast.data_format import ParquetFormat
+from feast.types import Float32, Float64
 
 
 client = Entity(name="client_id", join_keys=["client_id"])
 
+DATA_PATH = str(Path(__file__).resolve().parent / "data" / "client_profiles.parquet")
+
 
 client_profile_source = FileSource(
     name="client_profile_source",
-    path="data/client_profiles.csv",
+    path=DATA_PATH,
     timestamp_field="event_timestamp",
+    file_format=ParquetFormat(),
 )
 
 

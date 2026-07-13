@@ -80,6 +80,21 @@ feast -c feature_repo apply
 feast -c feature_repo materialize-incremental 2026-07-11T00:00:00Z
 ```
 
+For Feast locally, use a supported Python runtime such as 3.11 or 3.12.
+The main project venv in this workspace is Python 3.14, which is fine for the
+API scaffold but not reliable for the current Feast and `pyarrow` stack.
+
+Example local Feast workflow:
+
+```bash
+python3.11 -m venv .venv-feast311
+source .venv-feast311/bin/activate
+pip install feast==0.38.0 "pyarrow>=17,<18"
+python ingest/run_all.py
+feast -c feature_repo apply
+feast -c feature_repo materialize-incremental 2026-07-11T00:00:00Z
+```
+
 ## Importing into watsonx Orchestrate
 
 `agents/graph.py` uses LangGraph's native `interrupt()` / `Command(resume=...)`

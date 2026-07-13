@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "data" / "sample_business.json"
 OUTPUT_DIR = ROOT / "feature_repo" / "data"
 OUTPUT_FILE = OUTPUT_DIR / "client_profiles.csv"
+PARQUET_OUTPUT_FILE = OUTPUT_DIR / "client_profiles.parquet"
 
 
 def _load_business(path: Path) -> dict:
@@ -79,7 +80,22 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(rows)
 
+    parquet_written = False
+    try:
+        import pandas as pd
+
+        frame = pd.DataFrame(rows)
+        frame["event_timestamp"] = pd.to_datetime(frame["event_timestamp"], utc=True)
+        frame.to_parquet(PARQUET_OUTPUT_FILE, index=False)
+        parquet_written = True
+    except Exception:
+        parquet_written = False
+
     print(f"Wrote {len(rows)} rows to {OUTPUT_FILE}")
+    if parquet_written:
+        print(f"Wrote Feast-compatible parquet to {PARQUET_OUTPUT_FILE}")
+    else:
+        print("Skipped parquet export; install pandas+pyarrow in a supported Python runtime to enable Feast materialization.")
     print("Next step: add Feast repo definitions under feature_repo/ before materialization.")
 
 

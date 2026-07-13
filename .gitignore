@@ -4,3 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache/
+.venv-feast311/
+feature_repo/data/*.db
+feature_repo/data/*.jsonl
+feature_repo/data/*.parquet

@@ -1,0 +1,8 @@
+project: advisory_mvp
+provider: local
+registry: data/registry.db
+entity_key_serialization_version: 2
+
+online_store:
+  type: sqlite
+  path: data/online_store.db

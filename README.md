@@ -10,11 +10,13 @@ lenses, the living deal room, and benchmarking.
 
 ## What's here
 
-```
+```text
 scoring/sale_readiness.py   deterministic scoring -- no LLM, fully unit-testable
 agents/state.py             LangGraph state schema
 agents/llm.py               LLM wrapper with a template/heuristic fallback
 agents/graph.py             the rehearsal state graph
+airflow/dag_ingest.py       optional Airflow DAG for feature ingestion/materialization
+ingest/run_all.py           deterministic seed ingest for Feast-compatible profile data
 data/sample_business.json   a sample business profile to run against
 main.py                     CLI entry point
 ```
@@ -30,7 +32,7 @@ computes them.
 
 ## Running it
 
-```
+```bash
 pip install -r requirements.txt
 python main.py
 ```
@@ -41,18 +43,42 @@ logic and see the full flow end to end before wiring up a real model.
 
 To use real generation, set an API key:
 
-```
+```bash
 export ANTHROPIC_API_KEY=your-key-here
 python main.py
 ```
 
 Try your own business data:
 
-```
+```bash
 python main.py path/to/your_business.json
 ```
 
 (match the shape in `data/sample_business.json`)
+
+Optional Airflow/Feast scaffold:
+
+```bash
+python ingest/run_all.py
+```
+
+This writes a deterministic seed dataset to `feature_repo/data/client_profiles.csv`
+for the Airflow DAG to reference. You still need a real Feast repo definition
+inside `feature_repo/` before `feast materialize-incremental ...` will work.
+
+The repo scaffold now includes:
+
+```text
+feature_repo/feature_store.yaml
+feature_repo/business_profile_repo.py
+```
+
+Apply and materialize it with:
+
+```bash
+feast -c feature_repo apply
+feast -c feature_repo materialize-incremental 2026-07-11T00:00:00Z
+```
 
 ## Importing into watsonx Orchestrate
 
@@ -66,7 +92,7 @@ conversation-turn handling once imported).
 `agent.yaml` is the import spec. Once the ADK is installed
 (`pip install --upgrade ibm-watsonx-orchestrate`):
 
-```
+```bash
 orchestrate agents import -f agent.yaml
 ```
 

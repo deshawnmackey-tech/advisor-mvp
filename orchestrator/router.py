@@ -1,6 +1,106 @@
-from typing import Literal, TypedDict
+import os
+import uuid
+from datetime import datetime
+from typing import Callable, Dict, Literal, TypedDict
 
+import motor.motor_asyncio
+from fastapi import HTTPException
 from langgraph.graph import END, StateGraph
+
+from agents.general_agent import GeneralAgent
+from agents.investor_agent import InvestorAgent
+from agents.loan_agent import LoanAgent
+from agents.my_new_agent import MyNewAgent
+from agents.sale_agent import SaleAgent
+
+
+AGENT_REGISTRY: Dict[str, Callable[[str, str], object]] = {
+    "sale": lambda client_id, msg: SaleAgent(client_id, msg),
+    "loan": lambda client_id, msg: LoanAgent(client_id, msg),
+    "investor": lambda client_id, msg: InvestorAgent(client_id, msg),
+    "general": lambda client_id, msg: GeneralAgent(client_id, msg),
+    "my_new_scenario": lambda client_id, msg: MyNewAgent(client_id, msg),
+}
+
+MONGO_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+mongo_client = motor.motor_asyncio.AsyncIOMotorClient(
+    MONGO_URI,
+    serverSelectionTimeoutMS=1000,
+    connectTimeoutMS=1000,
+    socketTimeoutMS=1000,
+)
+trace_coll = mongo_client.advisory.agent_traces
+
+
+async def store_trace(trace_id: str, payload: dict) -> None:
+    try:
+        await trace_coll.insert_one(
+            {
+                "_id": trace_id,
+                "timestamp": datetime.utcnow(),
+                "payload": payload,
+            }
+        )
+    except Exception:
+        # Do not block API responses if tracing storage is unavailable.
+        return
+
+
+async def dispatch(
+    client_id: str,
+    scenario: str,
+    user_message: str,
+    rehearsal: bool = False,
+) -> Dict:
+    if scenario not in AGENT_REGISTRY:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported scenario '{scenario}'. Choose from {list(AGENT_REGISTRY)}",
+        )
+
+    trace_id = str(uuid.uuid4())
+
+    try:
+        agent = AGENT_REGISTRY[scenario](client_id, user_message)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to instantiate agent: {exc}",
+        ) from exc
+
+    try:
+        if rehearsal:
+            result = {
+                "snapshot": {"score": 75, "strengths": [], "weaknesses": []},
+                "actions": [],
+                "disclaimer": "This is a rehearsal stub - no real data.",
+            }
+        else:
+            result = await agent.run()
+    except Exception as exc:
+        await store_trace(
+            trace_id,
+            {
+                "scenario": scenario,
+                "client_id": client_id,
+                "user_message": user_message,
+                "error": str(exc),
+                "stage": "agent_execution",
+            },
+        )
+        raise HTTPException(status_code=500, detail=f"Agent execution failed: {exc}") from exc
+
+    await store_trace(
+        trace_id,
+        {
+            "scenario": scenario,
+            "client_id": client_id,
+            "user_message": user_message,
+            "result": result,
+            "rehearsal": rehearsal,
+        },
+    )
+    return {"payload": result, "trace_id": trace_id}
 
 
 Persona = Literal["buyer", "sba_underwriter", "investor", "general"]

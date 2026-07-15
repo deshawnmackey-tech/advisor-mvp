@@ -23,4 +23,4 @@ instructions: >
   5. End with: "This is educational guidance, not financial advice."
 collaborators: []
 tools:
-  - advisory_api:get_loan_readiness
+  - get_loan_readiness

@@ -46,3 +46,30 @@
 ---
 
 *See `MANUAL.html` for the complete reference including all field definitions, scoring logic, onboarding procedures, and compliance requirements.*
+
+---
+
+## Section 06 — Human Advisor Review (MANDATORY)
+
+The platform sets `advisor_review_required = true` automatically whenever any finding is HIGH severity. **No report with this flag should be presented to a client without a qualified advisor reviewing it first.**
+
+### Pre-Presentation Checklist
+Before presenting any report to a client, the advisor must confirm:
+
+1. All revenue figures match the most recent tax return or reviewed financials
+2. Customer revenue breakdown is accurate — verified against AR aging or QuickBooks
+3. `documentation_completeness_pct` reflects documents actually in hand, not intent
+4. `annual_debt_service` includes ALL P+I payments in the next 12 months
+5. No HIGH finding is the result of a data entry error
+6. Any context that changes a finding's meaning has been noted
+7. Verbal disclaimer is prepared (see Section 12)
+
+### What a Human Advisor Adds That the AI Cannot
+- **Data quality judgment** — the AI trusts the numbers; the advisor questions whether they're right
+- **Forward-looking context** — the platform scores the current snapshot; the advisor knows what is about to change
+- **Market and relationship knowledge** — who the likely buyers/lenders are, what they care about
+- **Emotional calibration** — the advisor frames difficult findings in a way the owner can hear and act on
+- **Legal and ethical accountability** — the advisor is the professional of record; the AI is a tool, not a fiduciary
+
+> `advisor_review_required` is set in `agent/orchestrator.py` line 129:
+> `advisor_review_required = any(f["severity"] == "high" for f in findings)`

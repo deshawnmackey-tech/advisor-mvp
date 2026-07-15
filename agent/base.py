@@ -25,11 +25,43 @@ from langgraph.types import interrupt
 # Import from our local sub-modules (not the openai-agents SDK)
 from agent import llm
 from agent.state import Persona, RehearsalState
+
+
 # No collision: project package is 'agent/', SDK package is 'agents'. Direct import.
 def _import_sdk():
     """Return (Agent, Runner, function_tool, set_default_openai_key) from the openai-agents SDK."""
     from agents import Agent, Runner, function_tool, set_default_openai_key
     return Agent, Runner, function_tool, set_default_openai_key
+
+
+def get_checkpointer(thread_id: str | None = None):
+    """
+    Return a LangGraph checkpointer.
+
+    If POSTGRES_DSN is set in the environment, returns a Postgres-backed
+    checkpointer so rehearsal state survives across sessions and API restarts.
+    Falls back to MemorySaver (in-process, lost on restart) when no DSN is set.
+
+    Usage:
+        checkpointer = get_checkpointer()
+        graph = build_rehearsal_graph("buyer", checkpointer=checkpointer)
+        config = {"configurable": {"thread_id": thread_id or str(uuid.uuid4())}}
+    """
+    dsn = os.environ.get("POSTGRES_DSN", "")
+    if dsn:
+        try:
+            from langgraph.checkpoint.postgres import PostgresSaver
+            import psycopg
+            conn = psycopg.connect(dsn, autocommit=True)
+            saver = PostgresSaver(conn)
+            saver.setup()   # creates checkpoint tables if they don't exist
+            return saver
+        except Exception as exc:
+            import logging
+            logging.getLogger("advisory").warning(
+                "Postgres checkpointer unavailable (%s) — falling back to MemorySaver", exc
+            )
+    return MemorySaver()
 
 
 

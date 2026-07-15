@@ -1,22 +1,83 @@
 {
+  "_comment": "Cornerstone Facilities Group — fill every field with real numbers before going live. Fields marked TODO are placeholders.",
   "name": "Cornerstone Facilities Group",
   "industry": "commercial janitorial services",
+
+  "revenue_and_profit": {
+    "_note": "All figures in USD. TTM = trailing twelve months."
+  },
   "annual_revenue": 4200000,
+  "revenue_ttm": 4200000,
   "ebitda": 588000,
+  "gross_profit": 1470000,
+  "gross_margin_pct": 35.0,
+  "net_income": 320000,
   "owner_addbacks": 145000,
+  "yoy_revenue_growth_pct": 8.0,
+  "net_revenue_retention_pct": 94.0,
+
+  "debt_and_cash": {
+    "_note": "annual_debt_service = all scheduled P+I payments in the next 12 months."
+  },
   "annual_debt_service": 520000,
+  "cash_balance": 210000,
+  "monthly_operating_expenses": 280000,
+  "existing_collateral_usd": 500000,
+  "total_liabilities": 1040000,
+  "long_term_debt": 890000,
+
+  "customers": {
+    "_note": "customer_revenue keys must be exact customer names or 'all_other_customers'."
+  },
   "customer_revenue": {
-    "Meridian Office Park": 1428000,
-    "Delta Logistics Hub": 630000,
-    "Riverside Medical Plaza": 420000,
-    "all_other_customers": 1722000
+    "Meridian Office Park":      1428000,
+    "Delta Logistics Hub":        630000,
+    "Riverside Medical Plaza":    420000,
+    "all_other_customers":       1722000
   },
   "customers_with_multiyear_contracts": ["Riverside Medical Plaza"],
+  "top_customer_contract_term_years": 0,
+  "top_customer_change_of_control_clause": false,
+
+  "operations": {
+    "_note": "owner_dependent_processes is a list of plain-English descriptions."
+  },
   "recurring_revenue_pct": 72,
   "owner_dependent_processes": [
     "all client contract renewals negotiated personally by owner",
     "no documented standard operating procedures for crew scheduling",
     "owner is the only person with vendor pricing relationships"
   ],
-  "documentation_completeness_pct": 55
+  "num_full_time_employees": 38,
+  "num_management_staff": 2,
+  "years_in_business": 11,
+
+  "documentation": {
+    "_note": "documentation_completeness_pct = % of standard diligence docs that are organized and available."
+  },
+  "documentation_completeness_pct": 55,
+  "tax_returns_ready_years": 2,
+  "bank_reconciliation_pct": 85.0,
+  "audited_financials": false,
+  "reviewed_financials": true,
+
+  "growth_and_market": {
+    "_note": "TAM/SAM/SOM used by investor agent. All USD."
+  },
+  "tam_usd": 2500000000,
+  "sam_usd": 500000000,
+  "som_usd": 80000000,
+  "customer_lifetime_value": 15000,
+  "customer_acquisition_cost": 2500,
+  "annual_churn_rate_pct": 7.0,
+  "pipeline_value_usd": 380000,
+
+  "sale_context": {
+    "_note": "Used by sale readiness scoring and buyer persona questions."
+  },
+  "asking_price_usd": 0,
+  "reason_for_sale": "TODO — owner retirement / growth capital / partnership",
+  "transition_period_months": 12,
+  "seller_financing_willing": true,
+  "real_estate_included": false
 }

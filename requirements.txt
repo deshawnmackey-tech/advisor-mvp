@@ -33,8 +33,10 @@ psycopg2-binary>=2.9.0
 pytest>=8.0.0
 pytest-asyncio>=0.23.0
 
-# ── Optional: Postgres LangGraph checkpointer (production) ───────────────────
-# langgraph-checkpoint-postgres>=2.0.0
+# ── Postgres LangGraph checkpointer (stateful multi-turn rehearsals) ─────────
+# Set POSTGRES_DSN in .env to activate. Falls back to MemorySaver if unset.
+langgraph-checkpoint-postgres>=2.0.0
+psycopg[binary]>=3.1.0
 
 # ── Feast + Airflow + Prophet — install in the separate .venv-feast311 ────────
 # These require Python <=3.12 and have conflicting numpy/grpc deps with the

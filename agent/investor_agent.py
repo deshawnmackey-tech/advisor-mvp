@@ -82,7 +82,8 @@ class InvestorAgent(AgentBase):
 
 
 def build_graph(checkpointer=None):
-    return build_rehearsal_graph("investor", checkpointer=checkpointer)
+    from agent.base import get_checkpointer
+    return build_rehearsal_graph("investor", checkpointer=checkpointer or get_checkpointer())
 
 
 def create_graph():

@@ -1,0 +1,35 @@
+# Slim requirements for cloud deployment (Render / Railway / Fly.io)
+# Heavy local-only packages removed:
+#   torch          — not used by API routes (only by sentence-transformers locally)
+#   xgboost        — not used in any API route
+#   sentence-transformers — FAISS indexing is local only; retriever falls back to JSON
+#   weasyprint     — PDF export is an optional tool, not required for /v1/advise
+#   faiss-cpu      — retriever falls back to local JSON store without it
+#   numba          — removed in an earlier commit
+#   feast / prophet / airflow — in .venv-feast311 only, never in main stack
+
+# ── Core API + agent stack ────────────────────────────────────────────────────
+langgraph>=0.2.0
+fastapi>=0.112.0
+uvicorn[standard]>=0.30.0
+openai>=1.77.0
+openai-agents>=0.18.0
+python-dotenv==1.0.1
+
+# ── Analytics (lightweight) ───────────────────────────────────────────────────
+pandas>=2.1.0
+numpy>=1.22,<2
+scikit-learn>=1.3.0
+
+# ── Templating ───────────────────────────────────────────────────────────────
+jinja2>=3.1.0
+
+# ── Cloud + DB ────────────────────────────────────────────────────────────────
+boto3>=1.35.0
+pymongo[srv]>=4.0.0
+motor>=3.0.0
+
+# ── Postgres LangGraph checkpointer ──────────────────────────────────────────
+langgraph-checkpoint-postgres>=2.0.0
+psycopg[binary]>=3.1.0
+psycopg2-binary>=2.9.0

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: advisory-mvp
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /health
+
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false          # set manually in Render dashboard
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: POSTGRES_DSN
+        sync: false          # use Supabase connection string
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_BUCKET
+        sync: false

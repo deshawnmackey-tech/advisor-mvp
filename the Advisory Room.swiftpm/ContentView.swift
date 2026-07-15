@@ -125,7 +125,7 @@ enum APIError: LocalizedError {
 @MainActor
 class AdvisoryAPI: ObservableObject {
     // Change this to your production URL before shipping
-    static let baseURL = "http://localhost:8000"
+    static let baseURL = "https://advisor-mvp.onrender.com"
 
     func advise(scenario: Scenario, clientID: String, message: String) async throws -> AdviseResponse {
         guard let url = URL(string: "\(Self.baseURL)/v1/advise") else { throw APIError.noServer }

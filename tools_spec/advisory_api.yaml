@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: http://localhost:8000
+  - url: https://compare-sworn-remold.ngrok-free.dev
 info:
   title: Advisory MVP API
   description: >

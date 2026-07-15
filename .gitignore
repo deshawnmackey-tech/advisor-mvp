@@ -8,3 +8,5 @@ __pycache__/
 feature_repo/data/*.db
 feature_repo/data/*.jsonl
 feature_repo/data/*.parquet
+.venv/
+.env

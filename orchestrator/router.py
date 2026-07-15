@@ -7,11 +7,11 @@ import motor.motor_asyncio
 from fastapi import HTTPException
 from langgraph.graph import END, StateGraph
 
-from agents.general_agent import GeneralAgent
-from agents.investor_agent import InvestorAgent
-from agents.loan_agent import LoanAgent
-from agents.my_new_agent import MyNewAgent
-from agents.sale_agent import SaleAgent
+from agent.general_agent import GeneralAgent
+from agent.investor_agent import InvestorAgent
+from agent.loan_agent import LoanAgent
+from agent.my_new_agent import MyNewAgent
+from agent.sale_agent import SaleAgent
 
 
 AGENT_REGISTRY: Dict[str, Callable[[str, str], object]] = {

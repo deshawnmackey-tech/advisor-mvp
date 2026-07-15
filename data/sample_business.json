@@ -4,6 +4,7 @@
   "annual_revenue": 4200000,
   "ebitda": 588000,
   "owner_addbacks": 145000,
+  "annual_debt_service": 520000,
   "customer_revenue": {
     "Meridian Office Park": 1428000,
     "Delta Logistics Hub": 630000,

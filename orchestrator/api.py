@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from datetime import datetime
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query, Request

@@ -1,18 +1,23 @@
+# watsonx Orchestrate import spec — SBA Underwriter Rehearsal
+#
+# Import via the ADK CLI:
+#   orchestrate agents import -f agent_sba_underwriter.yaml
+
 spec_version: v1
 kind: agent
 name: sba_underwriter_rehearsal
 title: SBA Underwriter Rehearsal
 description: >
   Adversarial diligence simulation agent. Role-plays as an SBA underwriter
-  interrogating sale-readiness findings with an emphasis on documentation,
-  repayment risk, and operational resilience. Findings are produced upstream
-  by scoring/sale_readiness.py; this agent only explains and interrogates them.
+  interrogating loan-readiness findings with emphasis on DSCR, documentation,
+  repayment risk, and operational resilience. Findings are produced deterministically
+  by scoring/loan_readiness.py; this agent only explains and interrogates them.
 
 framework: langgraph
 
 deployment:
   code_bundle:
-    entrypoint: "agents.loan_agent:create_graph"
+    entrypoint: "agent.loan_agent:create_graph"
 
   checkpointer:
     type: postgres

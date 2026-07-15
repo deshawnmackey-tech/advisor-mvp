@@ -1,45 +1,29 @@
-# watsonx Orchestrate import spec for the buyer-persona diligence rehearsal.
+# watsonx Orchestrate import spec — Sale Readiness Buyer Rehearsal
 #
-# This registers agents/graph.py's create_graph() as a native LangGraph
-# agent inside watsonx Orchestrate. Verify field names and CLI syntax
-# against the current ADK docs before importing -- this is a fast-moving
-# part of the platform and the exact shape may have changed since this
-# spec was written.
-#
-# Import (from the ADK CLI, once installed via
-# `pip install --upgrade ibm-watsonx-orchestrate`):
-#
+# Import via the ADK CLI:
 #   orchestrate agents import -f agent.yaml
 #
+# Ensure OPENAI_API_KEY and (optionally) POSTGRES_DSN are set as
+# environment credentials in the Orchestrate workspace before importing.
+
 spec_version: v1
 kind: agent
 name: sale_readiness_rehearsal
 title: Sale Readiness Buyer Rehearsal
 description: >
-  Adversarial diligence simulation agent. Role-plays as a skeptical buyer
-  interrogating a business's sale-readiness findings -- customer
-  concentration, owner dependency, documentation completeness, recurring
-  revenue -- and flags any answer that lacks concrete evidence (a
-  contract, a documented process, a specific number). Findings are
-  produced upstream by scoring/sale_readiness.py, a deterministic engine
-  with no LLM calls; this agent only explains and interrogates them.
+  Adversarial diligence simulation agent. Role-plays as a skeptical private-equity
+  buyer interrogating a business's sale-readiness findings — customer concentration,
+  owner dependency, documentation completeness, recurring revenue — and flags any
+  answer that lacks concrete evidence (a contract, a documented process, a specific
+  number). Findings are produced deterministically by scoring/sale_readiness.py with
+  no LLM calls; this agent only explains and interrogates them.
 
 framework: langgraph
 
 deployment:
   code_bundle:
-    # module:function -- a zero-arg callable that returns a compiled graph.
-    entrypoint: "agents.sale_agent:create_graph"
+    entrypoint: "agent.sale_agent:create_graph"
 
-  # State persistence across conversation turns. Without this, the
-  # interrupt()/resume cycle in agents/graph.py has nowhere to restore
-  # state from between turns. Exclude this block entirely to run without
-  # persistence (fine for a quick test, not for a real rehearsal that
-  # needs to survive multiple turns).
   checkpointer:
     type: postgres
     connection_string_key: db_connection_string
-
-# Set this credential in the watsonx Orchestrate environment before import
-# (API key / connection-string type, per the ADK docs) so the platform can
-# inject it at runtime.

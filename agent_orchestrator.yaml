@@ -1,11 +1,22 @@
+# watsonx Orchestrate import spec — Advisory Rehearsal Orchestrator
+#
+# Import via the ADK CLI:
+#   orchestrate agents import -f agent_orchestrator.yaml
+#
+# This is the routing agent. Import this last, after the three specialist
+# agents (sale, loan, investor) are already registered.
+
 spec_version: v1
 kind: agent
 name: advisory_rehearsal_orchestrator
 title: Advisory Rehearsal Orchestrator
 description: >
-  Routing agent that selects which advisory rehearsal should run first:
-  buyer, SBA underwriter, or investor. It can honor an explicit requested
-  persona or choose one heuristically from the business profile.
+  Routing agent that selects which advisory rehearsal should run first —
+  buyer, SBA underwriter, or investor. Honors an explicit requested persona
+  or chooses one heuristically from the business profile: documentation < 60%
+  routes to SBA underwriter; recurring revenue >= 70% and revenue >= $5M routes
+  to investor; revenue <= $1M routes to general advisor; otherwise defaults to
+  buyer diligence.
 
 framework: langgraph
 

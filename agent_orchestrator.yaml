@@ -1,25 +1,32 @@
-# watsonx Orchestrate import spec — Advisory Rehearsal Orchestrator
-#
-# Import via the ADK CLI:
-#   orchestrate agents import -f agent_orchestrator.yaml
-#
-# This is the routing agent. Import this last, after the three specialist
-# agents (sale, loan, investor) are already registered.
-
 spec_version: v1
-kind: agent
-name: advisory_rehearsal_orchestrator
-title: Advisory Rehearsal Orchestrator
+kind: native
+style: react
+name: advisory_orchestrator
+llm: groq/openai/gpt-oss-120b
 description: >
-  Routing agent that selects which advisory rehearsal should run first —
-  buyer, SBA underwriter, or investor. Honors an explicit requested persona
-  or chooses one heuristically from the business profile: documentation < 60%
-  routes to SBA underwriter; recurring revenue >= 70% and revenue >= $5M routes
-  to investor; revenue <= $1M routes to general advisor; otherwise defaults to
-  buyer diligence.
+  Master advisory orchestrator that routes business owners to the right
+  specialist advisor — sale readiness, SBA loan, or investor — based on their
+  goal. Runs all three lenses and reconciles cross-lens risks when requested.
+instructions: >
+  You are the Advisory Room orchestrator. Your job is to understand what the
+  business owner is trying to achieve and route them to the right analysis.
 
-framework: langgraph
+  Routing rules (apply in order):
+  - If they mention selling, exit, or acquisition → call sale_readiness_advisor
+  - If they mention a loan, SBA, financing, or debt → call sba_loan_advisor
+  - If they mention investors, fundraising, or a pitch deck → call investor_readiness_advisor
+  - If they want a full picture or say "all" → call all three advisors in order:
+    sale_readiness_advisor, then sba_loan_advisor, then investor_readiness_advisor
 
-deployment:
-  code_bundle:
-    entrypoint: "orchestrator.router:create_orchestrator_graph"
+  After routing:
+  1. Present each advisor's score and top findings clearly.
+  2. If more than one lens was run, identify any risks that appear across
+     multiple lenses (e.g. customer concentration flagged in both sale and
+     investor readiness) and call these out as strategic priorities.
+  3. Present a unified prioritized action list.
+  4. End with: "This is educational guidance, not financial advice."
+collaborators:
+  - sale_readiness_advisor
+  - sba_loan_advisor
+  - investor_readiness_advisor
+tools: []

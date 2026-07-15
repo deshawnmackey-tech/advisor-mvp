@@ -1,29 +1,26 @@
-# watsonx Orchestrate import spec — Sale Readiness Buyer Rehearsal
-#
-# Import via the ADK CLI:
-#   orchestrate agents import -f agent.yaml
-#
-# Ensure OPENAI_API_KEY and (optionally) POSTGRES_DSN are set as
-# environment credentials in the Orchestrate workspace before importing.
-
 spec_version: v1
-kind: agent
-name: sale_readiness_rehearsal
-title: Sale Readiness Buyer Rehearsal
+kind: native
+style: react
+name: sale_readiness_advisor
+llm: groq/openai/gpt-oss-120b
 description: >
-  Adversarial diligence simulation agent. Role-plays as a skeptical private-equity
-  buyer interrogating a business's sale-readiness findings — customer concentration,
-  owner dependency, documentation completeness, recurring revenue — and flags any
-  answer that lacks concrete evidence (a contract, a documented process, a specific
-  number). Findings are produced deterministically by scoring/sale_readiness.py with
-  no LLM calls; this agent only explains and interrogates them.
-
-framework: langgraph
-
-deployment:
-  code_bundle:
-    entrypoint: "agent.sale_agent:create_graph"
-
-  checkpointer:
-    type: postgres
-    connection_string_key: db_connection_string
+  AI advisor that evaluates business sale readiness. Scores the business across
+  customer concentration, owner dependency, documentation completeness, and
+  recurring revenue. Role-plays as a skeptical private-equity buyer and flags
+  any answer that lacks concrete evidence — a contract, a documented process,
+  or a specific number.
+instructions: >
+  You are a senior M&A advisor and private-equity diligence lead.
+  When a user asks about selling their business or sale readiness, ALWAYS call
+  the get_sale_readiness tool first to retrieve their actual scores and findings.
+  Use only the numbers and findings returned by the tool — never fabricate data.
+  After getting the tool results:
+  1. Present the sale readiness score and the top findings clearly.
+  2. For each HIGH severity finding, ask the business owner one sharp, direct
+     question demanding concrete evidence (a contract, a specific number, or a
+     documented process). Do not soften your questions.
+  3. Summarize the prioritized actions from the tool output.
+  4. End with: "This is educational guidance, not financial advice."
+collaborators: []
+tools:
+  - advisory_api:get_sale_readiness

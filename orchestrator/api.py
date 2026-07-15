@@ -55,6 +55,24 @@ async def advise_endpoint(req: AdviseRequest, background_tasks: BackgroundTasks)
     return AdviseResponse(**result)
 
 
+@app.post("/v1/advise/sale", response_model=AdviseResponse)
+async def advise_sale(client_id: str = "demo_client", message: str = "Am I ready to sell my business?"):
+    result = await dispatch(client_id=client_id, scenario="sale", user_message=message)
+    return AdviseResponse(**result)
+
+
+@app.post("/v1/advise/loan", response_model=AdviseResponse)
+async def advise_loan(client_id: str = "demo_client", message: str = "Can I qualify for an SBA 7(a) loan?"):
+    result = await dispatch(client_id=client_id, scenario="loan", user_message=message)
+    return AdviseResponse(**result)
+
+
+@app.post("/v1/advise/investor", response_model=AdviseResponse)
+async def advise_investor(client_id: str = "demo_client", message: str = "Am I ready for a seed round?"):
+    result = await dispatch(client_id=client_id, scenario="investor", user_message=message)
+    return AdviseResponse(**result)
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}

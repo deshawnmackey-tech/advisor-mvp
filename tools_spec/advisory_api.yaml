@@ -1,0 +1,235 @@
+openapi: 3.0.0
+servers:
+  - url: http://localhost:8000
+info:
+  title: Advisory MVP API
+  description: >
+    AI-powered business readiness scoring and advisory. Returns deterministic
+    financial scores and GPT-4o-mini recommendations across three lenses:
+    sale readiness, SBA loan readiness, and investor readiness.
+  version: "1.0"
+  contact:
+    name: Advisory Room
+    url: https://github.com/deshawnmackey-tech/advisor-mvp
+
+paths:
+  /v1/advise:
+    post:
+      operationId: advise
+      summary: Run a full advisory analysis for a given scenario
+      description: >
+        Runs the requested advisory lens (sale, loan, investor, or general)
+        for the given client and returns a scored report with findings and
+        recommended actions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - client_id
+                - scenario
+                - message
+              properties:
+                client_id:
+                  type: string
+                  description: Unique identifier for the business client
+                  example: demo_client
+                scenario:
+                  type: string
+                  enum: [sale, loan, investor, general]
+                  description: The advisory lens to run
+                  example: sale
+                message:
+                  type: string
+                  description: The user's natural-language question
+                  example: Am I ready to sell my business?
+                rehearsal:
+                  type: boolean
+                  description: If true, returns a stub without making API calls
+                  default: false
+      responses:
+        "200":
+          description: Advisory report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payload:
+                    type: object
+                    description: Advisory results including snapshot, actions, and disclaimer
+                    properties:
+                      snapshot:
+                        type: object
+                        description: Key financial metrics and scores
+                      actions:
+                        type: array
+                        items:
+                          type: string
+                        description: Prioritized recommended actions
+                      disclaimer:
+                        type: string
+                        description: Legal disclaimer
+                  trace_id:
+                    type: string
+                    description: Unique trace ID for this advisory run
+        "400":
+          description: Bad request — unsupported scenario
+        "500":
+          description: Agent execution error
+
+  /v1/advise/sale:
+    post:
+      operationId: get_sale_readiness
+      summary: Get sale readiness score and findings
+      description: >
+        Scores the business on customer concentration, owner dependency,
+        documentation completeness, and recurring revenue. Returns a sale
+        readiness score (0-100), all findings with severity, and prioritized
+        recommended actions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - client_id
+                - message
+              properties:
+                client_id:
+                  type: string
+                  example: demo_client
+                message:
+                  type: string
+                  example: Am I ready to sell my business?
+                rehearsal:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Sale readiness report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvisoryResponse"
+        "500":
+          description: Agent execution error
+
+  /v1/advise/loan:
+    post:
+      operationId: get_loan_readiness
+      summary: Get SBA loan readiness score and findings
+      description: >
+        Scores the business on DSCR, cash buffer, bank reconciliation, and
+        tax return readiness. Returns a loan readiness score (0-100), all
+        underwriting findings with severity, and prioritized actions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - client_id
+                - message
+              properties:
+                client_id:
+                  type: string
+                  example: demo_client
+                message:
+                  type: string
+                  example: Can I qualify for an SBA 7(a) loan?
+                rehearsal:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Loan readiness report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvisoryResponse"
+        "500":
+          description: Agent execution error
+
+  /v1/advise/investor:
+    post:
+      operationId: get_investor_readiness
+      summary: Get investor readiness score, TAM/SAM/SOM, and 12-month forecast
+      description: >
+        Scores the business on revenue growth, net revenue retention, gross
+        margin, and customer concentration. Returns investor readiness score
+        (0-100), TAM/SAM/SOM, 12-month revenue forecast, and recommended actions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - client_id
+                - message
+              properties:
+                client_id:
+                  type: string
+                  example: demo_client
+                message:
+                  type: string
+                  example: Am I ready for a seed round?
+                rehearsal:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Investor readiness report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvisoryResponse"
+        "500":
+          description: Agent execution error
+
+  /health:
+    get:
+      operationId: health_check
+      summary: Health check
+      description: Returns server status and timestamp.
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    example: "2026-07-15T12:00:00"
+
+components:
+  schemas:
+    AdvisoryResponse:
+      type: object
+      properties:
+        payload:
+          type: object
+          properties:
+            snapshot:
+              type: object
+              description: Key financial metrics and scores from the analysis
+            actions:
+              type: array
+              items:
+                type: string
+              description: Prioritized recommended actions
+            disclaimer:
+              type: string
+        trace_id:
+          type: string
+          description: Unique trace ID for auditing and replay

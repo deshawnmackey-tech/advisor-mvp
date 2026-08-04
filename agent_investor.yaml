@@ -1,8 +1,8 @@
 spec_version: v1
 kind: native
-style: react
+style: default
 name: investor_readiness_advisor
-llm: groq/openai/gpt-oss-120b
+llm: watsonx/openai/gpt-oss-120b
 description: >
   AI advisor that evaluates investor and fundraising readiness. Scores the
   business on revenue growth, net revenue retention, gross margin, and customer

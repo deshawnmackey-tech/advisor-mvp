@@ -1,8 +1,8 @@
 spec_version: v1
 kind: native
-style: react
+style: default
 name: sba_loan_advisor
-llm: groq/openai/gpt-oss-120b
+llm: watsonx/openai/gpt-oss-120b
 description: >
   AI advisor that evaluates SBA 7(a) loan readiness. Scores the business on
   DSCR, cash buffer, bank reconciliation, and tax return completeness. Role-plays

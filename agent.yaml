@@ -1,8 +1,8 @@
 spec_version: v1
 kind: native
-style: react
+style: default
 name: sale_readiness_advisor
-llm: groq/openai/gpt-oss-120b
+llm: watsonx/openai/gpt-oss-120b
 description: >
   AI advisor that evaluates business sale readiness. Scores the business across
   customer concentration, owner dependency, documentation completeness, and

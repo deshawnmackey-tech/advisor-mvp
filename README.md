@@ -1,18 +1,25 @@
 # advisor-mvp
 
-Minimal AI advisory workspace prototype that:
+Minimal AI advisory workspace prototype aligned to Archymedes Issue #467.
 
 1. Ingests a single JSON payload
 2. Normalizes accounting, banking, payroll, CRM, and debt inputs
-3. Runs a rule-based engine for:
-   - Core financial ratios
-   - Forecast range
-   - Valuation range
+3. Runs a deterministic advisory orchestrator with specialist lenses:
+   - Sale readiness advisor
+   - SBA loan advisor
+   - Investor readiness advisor
+4. Keeps explicit separation from production Loan Recommendation flow
 
 ## Run
 
 ```bash
 python /home/runner/work/advisor-mvp/advisor-mvp/advisor_workspace.py
+```
+
+## Test
+
+```bash
+python -m unittest -v /home/runner/work/advisor-mvp/advisor-mvp/test_advisory_workspace.py
 ```
 
 ## Shared JSON payload contract
@@ -38,7 +45,10 @@ All domains are read from one payload:
   },
   "crm": {
     "open_pipeline": 420000,
-    "win_rate": 0.34
+    "win_rate": 0.34,
+    "recurring_revenue_ratio": 0.58,
+    "top_customer_revenue_share": 0.22,
+    "nrr": 112
   },
   "debt": {
     "total_debt": 350000,
@@ -48,3 +58,7 @@ All domains are read from one payload:
 ```
 
 The output returns normalized source data plus calculated advisory metrics.
+
+## Issue #467 local artifact
+
+- One-pager: `/home/runner/work/advisor-mvp/advisor-mvp/docs/issue-467-local-one-pager.md`

@@ -1,12 +1,15 @@
-.DS_Store
+.venv/
+.venv-feast311/
+.env
+.git/
 __pycache__/
 *.py[cod]
 *.pyo
-*.pyd
 .pytest_cache/
-.venv-feast311/
+.DS_Store
+the Advisory Room.swiftpm/
 feature_repo/data/*.db
 feature_repo/data/*.jsonl
 feature_repo/data/*.parquet
-.venv/
-.env
+/tmp/
+*.log

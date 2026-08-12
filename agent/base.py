@@ -34,6 +34,27 @@ def _import_sdk():
     return Agent, Runner, function_tool, set_default_openai_key
 
 
+def _fallback_allowed() -> bool:
+    """Return True when demo fallback mode is permitted for local development."""
+    raw = os.getenv("ALLOW_AGENT_FALLBACK", "true").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _is_placeholder_key(value: str) -> bool:
+    lowered = (value or "").strip().lower()
+    placeholders = {
+        "",
+        "your_openai_key_here",
+        "your_anthropic_key_here",
+        "your_key_here",
+        "your-api-key-here",
+        "changeme",
+        "example",
+        "placeholder",
+    }
+    return lowered in placeholders or "your_" in lowered and "key" in lowered
+
+
 def get_checkpointer(thread_id: str | None = None):
     """
     Return a LangGraph checkpointer.
@@ -226,17 +247,22 @@ class AgentBase(ABC):
 
     async def run(self) -> Dict[str, Any]:
         """Run the agent loop, returning a validated response dict."""
-        api_key = os.environ.get("OPENAI_API_KEY", "")
-        if not api_key or "YOUR_KEY" in api_key:
-            return self._fallback_response()
+        api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+        if not api_key or _is_placeholder_key(api_key):
+            if _fallback_allowed():
+                return self._fallback_response()
+            raise RuntimeError("OPENAI_API_KEY is required for the live agent loop. Set it in the environment or disable ALLOW_AGENT_FALLBACK only for local demos.")
 
         try:
             Agent, Runner, function_tool, set_default_openai_key = _import_sdk()
             set_default_openai_key(api_key)
         except Exception:
-            return self._fallback_response()
+            if _fallback_allowed():
+                return self._fallback_response()
+            raise RuntimeError("The OpenAI Agents SDK could not initialize. Check your environment and package install.") from None
 
         tools = self._make_tools()
+        model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
         agent = Agent(
             name=self.name,
             instructions=(
@@ -245,7 +271,7 @@ class AgentBase(ABC):
                 + json.dumps(self.final_schema(), indent=2)
             ),
             tools=tools,
-            model="gpt-4o-mini",
+            model=model_name,
         )
 
         try:

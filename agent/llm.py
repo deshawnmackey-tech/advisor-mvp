@@ -4,9 +4,8 @@ Thin LLM wrapper for the LangGraph rehearsal graph.
 Primary:  OpenAI gpt-4o-mini  (uses OPENAI_API_KEY)
 Fallback: keyword templates    (no API key / network failure)
 
-Anthropic is no longer used here — the rehearsal graph runs entirely on
-OpenAI so both the agent loop (AgentBase) and the rehearsal graph share
-the same key and model.
+The active agent stack is OpenAI-based; keep the provider explicit in the
+runtime configuration to avoid mismatches between the app and environment.
 """
 
 import os
@@ -67,10 +66,31 @@ PERSONA_EVALUATION_NOTES = {
 }
 
 
+def _fallback_allowed() -> bool:
+    """Return True when local fallback mode is permitted for demos."""
+    raw = os.getenv("ALLOW_LLM_FALLBACK", "true").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _is_placeholder_key(value: str) -> bool:
+    lowered = (value or "").strip().lower()
+    placeholders = {
+        "",
+        "your_openai_key_here",
+        "your_anthropic_key_here",
+        "your_key_here",
+        "your-api-key-here",
+        "changeme",
+        "example",
+        "placeholder",
+    }
+    return lowered in placeholders or ("your_" in lowered and "key" in lowered)
+
+
 def _get_openai_client():
     """Return an OpenAI client if OPENAI_API_KEY is set, else None."""
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if not api_key or "YOUR_KEY" in api_key:
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if not api_key or _is_placeholder_key(api_key):
         return None
     try:
         from openai import OpenAI
@@ -97,6 +117,8 @@ def ask_question(persona: str, finding) -> str:
     """Generate the persona's question about a single finding."""
     client = _get_openai_client()
     if client is None:
+        if not _fallback_allowed():
+            raise RuntimeError("OPENAI_API_KEY is required for live LLM question generation.")
         templates = PERSONA_FALLBACK_QUESTIONS.get(persona, PERSONA_FALLBACK_QUESTIONS["buyer"])
         template = templates.get(finding["metric"], "Tell me more about: {value}")
         return template.format(value=finding["value"])
@@ -123,6 +145,8 @@ def evaluate_answer(persona: str, finding, answer: str) -> dict:
     """
     client = _get_openai_client()
     if client is None:
+        if not _fallback_allowed():
+            raise RuntimeError("OPENAI_API_KEY is required for live LLM evaluation.")
         return _keyword_evaluate(persona, finding, answer)
 
     system = PERSONA_PROMPTS[persona]

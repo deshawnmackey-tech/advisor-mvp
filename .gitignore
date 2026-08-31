@@ -10,6 +10,11 @@ feature_repo/data/*.jsonl
 feature_repo/data/*.parquet
 .venv/
 .env
+.env.*
+!.env.example
+apikey.json
+Advisory-MVP3_accessKeys.csv
+*.key
 
 # IronBee runtime artifacts
 .ironbee/sessions/

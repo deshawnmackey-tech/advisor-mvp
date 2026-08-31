@@ -41,10 +41,10 @@ Works with **no API key** -- `agents/llm.py` falls back to templated
 questions and keyword-based evaluation so you can read through the graph
 logic and see the full flow end to end before wiring up a real model.
 
-To use real generation, set an API key:
+To use real generation, set the active provider key:
 
 ```bash
-export ANTHROPIC_API_KEY=your-key-here
+export OPENAI_API_KEY=your-key-here
 python main.py
 ```
 

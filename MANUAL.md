@@ -40,7 +40,7 @@
 |---|---|
 | `OPENAI_API_KEY` | Agent loop + rehearsal questions |
 | `POSTGRES_DSN` | Rehearsal state persistence (Supabase) |
-| `ANTHROPIC_API_KEY` | Optional fallback LLM |
+| `OPENAI_API_KEY` | Active live-agent provider |
 | `AWS_ACCESS_KEY_ID` / `SECRET` | Optional PDF export to S3 |
 
 ---

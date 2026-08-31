@@ -9,7 +9,7 @@ Usage:
     python main.py --goal investor
     python main.py path/to/business.json --goal all
 
-    # LangGraph buyer-persona diligence rehearsal (ANTHROPIC_API_KEY optional):
+    # LangGraph buyer-persona diligence rehearsal (OPENAI_API_KEY optional):
     python main.py --goal sale --rehearsal
 
     # Full OpenAI agent loop via FastAPI (OPENAI_API_KEY + openai>=1.77):
@@ -62,7 +62,7 @@ def print_report(business: dict, goal: str) -> None:
     print(f"\nAdvisor review required: {'yes' if report.advisor_review_required else 'no'}")
 
 
-# ── rehearsal path (LangGraph, Anthropic LLM optional) ───────────────────────
+# ── rehearsal path (LangGraph, OpenAI-backed LLM optional) ─────────────────
 
 def run_rehearsal(business: dict, goal: str) -> None:
     from scoring import sale_readiness, loan_readiness, investor_readiness

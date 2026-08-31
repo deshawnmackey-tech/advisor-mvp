@@ -147,3 +147,70 @@ before importing -- this is a new and fast-moving part of the platform.
 Get the scoring rubric in `scoring/sale_readiness.py` reviewed by someone
 who has actually run M&A diligence, before trusting the numbers on real
 customer data.
+
+---
+
+## Advisor workspace prototype (Issue #467 local)
+
+Minimal AI advisory workspace prototype aligned to Archymedes Issue #467.
+
+1. Ingests a single JSON payload
+2. Normalizes accounting, banking, payroll, CRM, and debt inputs
+3. Runs a deterministic advisory orchestrator with specialist lenses:
+   - Sale readiness advisor
+   - SBA loan advisor
+   - Investor readiness advisor
+4. Keeps explicit separation from production Loan Recommendation flow
+
+### Run local prototype
+
+```bash
+python /home/runner/work/advisor-mvp/advisor-mvp/advisor_workspace.py
+```
+
+### Test local prototype
+
+```bash
+python -m unittest -v /home/runner/work/advisor-mvp/advisor-mvp/test_advisory_workspace.py
+```
+
+### Shared JSON payload contract
+
+All domains are read from one payload:
+
+```json
+{
+  "accounting": {
+    "revenue": 1200000,
+    "cogs": 480000,
+    "ebitda": 180000,
+    "current_assets": 310000,
+    "current_liabilities": 160000
+  },
+  "banking": {
+    "cash_balance": 195000,
+    "monthly_deposits": [98000, 102000, 99000]
+  },
+  "payroll": {
+    "monthly_payroll": 62000,
+    "employee_count": 18
+  },
+  "crm": {
+    "open_pipeline": 420000,
+    "win_rate": 0.34,
+    "recurring_revenue_ratio": 0.58,
+    "top_customer_revenue_share": 0.22,
+    "nrr": 112
+  },
+  "debt": {
+    "total_debt": 350000,
+    "monthly_debt_service": 9600
+  }
+}
+```
+
+The output returns normalized source data plus calculated advisory metrics.
+
+### Issue #467 local artifact
+
+- One-pager: `/home/runner/work/advisor-mvp/advisor-mvp/docs/issue-467-local-one-pager.md`
